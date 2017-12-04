@@ -14,14 +14,15 @@ The above transformations cannot be applied when the result is dependent on the 
 
 ## How to use reveal
 
-The ```reveal``` tool works only for the ```PrgEnv-cray``` programming environment. You will also need to load:
+The ```reveal``` tool works only for the ```PrgEnv-cray``` programming environment. You will also need to load the CPU architecture:
 ```
-module load perftools
+module load craype-x86-skylake
 ```
 
 You will need to compile your code (whether Fortran, C or C++) using the ```-h -pl=<perf_listing>```. For instance:
 
 ```
+rm -rf foo.pl
 ftn -h -pl=foo.pl foo.f90
 ```
 
@@ -32,5 +33,47 @@ reveal foo.pl
 (There is no need to run the code.)
 
 ## Walking through an example
+
+Our example code advects a pulse in three dimensions using a first order upwind scheme. The code takes the number of cells in in x, y and z.  We build the code using
+```
+module load slurm craype-x86-skylake perftools
+ftn -c upwind_mod.F90
+ftn -c upwind_main.F90
+ftn -o upwind upwind_mod.o upwind_main.o
+```
+
+To get baseline performance data, we type:
+```
+pat_build upwind
+```
+This will create executable ```upwind+pat```. 
+
+We can run the the non-instrumented and the instrumented versions of the code with 
+```
+sbatch upwind.sl
+sbatch upwind+pat.sl
+```
+
+To obtain an instrumentation report, type: 
+```
+pat_report upwind+pat+N-Ns > report-pat.txt 
+```
+where upwind+pat+N-Ns is the name of directory created when running upwind+pat (N are some numbers that will change with each run). 
+The performance report shows that XX percent of the time is spent subroutine YYY. 
+```
+```
+
+Change your directory to ```code/``` and 
+```
+rm -rf upwind.pl
+ftn -h -pl=upwind.pl upwind.F90
+```
+
+Then run
+```
+reveal upwind.pl
+```
+
+Click on ```upwind.F90``` and scroll down to line 122. This is the main loop, ```ntot``` is the number of cells. 
 
 ## Final words
