@@ -1,4 +1,4 @@
-# cray_reveae
+# cray_reveal
 Examples showing how to use Cray reveal to inspect code optimization
 
 ## Overview
@@ -58,7 +58,21 @@ To obtain an instrumentation report, type:
 ```
 pat_report upwind+pat+N-Ns > report-pat.txt 
 ```
-where upwind+pat+N-Ns is the name of directory created when running upwind+pat (N are some numbers that will change with each run). 
+where upwind+pat+N-Ns is the name of directory created when running upwind+pat (N are some numbers that will change with each run).  The output of the 
+slurm command should look like:
+```
+number of threads:          1 max number of threads:          1
+number of cells:        256        256        256
+number of time steps:        256
+check sum:     1.000000000
+Experiment data directory written:
+/scale_akl_nobackup/filesets/transit/pletzera/cray_reveal/code/upwind+pat+56467-61s
+
+real    3m12.688s
+user    0m0.020s
+sys     0m0.008s
+```
+
 The performance report shows that XX percent of the time is spent subroutine YYY. 
 ```
 ```
